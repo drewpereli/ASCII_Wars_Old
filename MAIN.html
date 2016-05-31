@@ -1,0 +1,189 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<style>
+		.float-left {
+			float: left;
+		}
+
+		.hidden {
+			visibility: hidden;
+		}
+
+		.display-none {
+			display: none;
+		}
+
+		h3 {
+			width: 90%;
+			margin: auto;
+			text-align: center;
+		}
+
+		#left-info{
+			width: 15%;
+			border: 1px solid black;
+			padding: 3px;
+		}
+
+		#canvases{
+			<!--border: 1px solid black;-->
+		}
+
+		#team-select{
+			width: 250px;
+			height: 40px;
+		}
+
+		#control-area-container
+		{
+			border: 1px solid black;
+			padding: 5px;
+			margin: 5px;
+			height: 500px;
+		}
+
+		.construct-button
+		{
+			float: left;
+			background-color: skyblue;
+			border-radius: 5px;
+			padding: 5px;
+			margin: 10px;
+		}
+
+
+		table, td
+		{
+			border: 1px solid black;
+			border-collapse: collapse;
+			border-spacing: 0px;
+			padding: 5px;
+		}
+
+		table
+		{
+			margin: 10px;
+		}
+
+	</style>
+	
+</head>
+<body>
+
+	<div id="left-info" class="float-left">
+		<div id="tile-info">
+			<h3>Selected Tile</h3>
+			<div id="tile-info-inner" class="hidden">
+				<div>Position: (<span id="tile-info-x"></span>, <span id="tile-info-y"></span>)</div>
+				<div>Elevation: <span id="tile-info-elevation"></span></div>
+				<div><span id="tile-info-owner"></span> territory</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="canvases" class="float-left">
+		<!-- Canvases -->
+		<canvas id="terrain-canvas"></canvas>
+		<canvas id="territory-canvas"></canvas>
+		<canvas id="actors-canvas"></canvas>
+		<canvas id="vision-canvas"></canvas>
+		<canvas id="seen-canvas"></canvas>
+		<canvas id="select-canvas"></canvas>
+		<!-- End Canvases -->
+	</div>
+
+	<div id="control-area-container" class="float-left">
+		<select id="team-select">
+		</select>
+		<div class="control-area display-none">
+			<select class="sub-control-area-select">
+				<option value="buildings">Buildings</option>
+				<option value="units">Units</option>
+				<option value="research">Research</option>
+			</select>
+			<div class="sub-control-area">
+				<div class="buildings-control-area-container">
+					<select class="buildings-select">
+						<option value="construct">Construct</option>
+						<option value="building-list">Building List</option>
+					</select>
+					<div class="buildings-control-area">
+						<div class="buildings-construct">
+						</div>
+						<div class="buildings-list display-none">
+							<table class="buildings-table">
+								<tr>
+									<th>On</th>
+									<th>Output</th>
+								</tr>
+								<tr class="buildings-table-entry-template display-none">
+									<td class="buildings-table-on-cell">
+										<input type="checkbox" value="on" /> On
+									</td>
+									<td class="buildings-table-output-cell">
+										Cycle from: 
+										<select class="squad-produce-select-1">
+										</select>
+										 to 
+										<select class="squad-produce-select-2">
+										</select>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="units-control-area-container  display-none">
+					Division: 
+					<select class="division-select">
+					</select>
+					<div class="units-control-area">
+						Unit AI stuff goes here
+					</div>		
+				</div>
+				<div class="research-control-area-container  display-none">
+					<div class="research-control-area">
+						Research stuff goes here
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="loadingMessage"></div>
+</body>
+</html>
+
+
+
+
+
+	<script src="js/jQuery.js"></script>
+	<script src="js/Random.js"></script>
+	<script src="js/functions.js"></script>
+	<script src="js/GlobalVariables.js"></script>
+	<script src="js/CalculationFunctions.js"></script>
+	<script src="js/Game.js"></script>
+	<script src="js/View.js"></script>
+	<script src="js/Map.js"></script>
+	<script src="js/Tile.js"></script>
+	<script src="js/Cell.js"></script>
+	<script src="js/Input.js"></script>
+	<script src="js/Level.js"></script>
+	<script src="js/Actor.js"></script>
+	<script src="js/Unit.js"></script>
+	<script src="js/Building.js"></script>
+	<script src="js/Producer.js"></script>
+	<script src="js/BuildingDefinitions.js"></script>
+	<script src="js/UnitDefinitions.js"></script>
+	<script src="js/Team.js"></script>
+	<script src="js/.js"></script>
+	<script src="js/.js"></script>
+	<script src="js/.js"></script>
+	<script src="js/.js"></script>
+	<script src="js/.js"></script>
+
+	<script>
+		g.initialize();
+	</script>
