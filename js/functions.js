@@ -13,3 +13,29 @@ function getShuffledArray(array)
 	}
 	return returnArray;
 }
+
+
+function find_mode(array) {
+	//var arr = getShuffledArray(array);
+	var arr = array;
+    var mode = {};
+    var max = 0, count = 0;
+
+    arr.forEach(function(e) {
+        if (mode[e]) { mode[e]++; }
+        else { mode[e] = 1; }
+
+        if (count<mode[e]) {
+            max = e;
+            count = mode[e];
+        }
+    });
+   
+    return max;
+}
+
+
+function l(string)
+{
+	console.log(string);
+}

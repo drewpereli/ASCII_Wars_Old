@@ -17,6 +17,10 @@ function View(width, height){
 
 	this.selectedTeam = 0;
 
+	this.zoom = g.constants.MAX_ZOOM; //10 is max zoom
+	this.MAX_ZOOM = g.constants.MAX_ZOOM;
+	this.MIN_ZOOM = g.constants.MIN_ZOOM;
+
 	this.canvases = {
 		terrain: $("#terrain-canvas")[0].getContext("2d"),
 		territory: $("#territory-canvas")[0].getContext("2d"),
@@ -74,17 +78,51 @@ View.prototype.setCell = function(cell)
 {
 	cell.fullClear();
 
-	var tile = this.getTileFromCell(cell);
-	var color;
-	if (tile)
+	var tiles = this.getTilesFromCell(cell);
+	if (tiles.length > 0)
 	{
+		cellAttribute = {
+			terrain: false,
+			territory: false,
+			actor: false,
+			elevation: false,
+		}
+
+		var counts = {
+			terrain: [],
+			elevation: [],
+			territory: [],
+			actor: [],
+		}
+
+		//Set the cell attributes
+		for (var i = 0 ; i < tiles.length ; i++)
+		{
+			var t = tiles[i];
+			var terrain = t.terrain;
+			var territory = t.territory;
+			var actor = t.actor;
+			var elevation = t.elevation;
+			counts.terrain.push(terrain);
+			counts.elevation.push(elevation);
+			counts.territory.push(territory);
+			counts.actor.push(actor);
+		}
+
+		cellAttribute.terrain = find_mode(counts.terrain);
+		cellAttribute.territory = find_mode(counts.territory);
+		cellAttribute.actor = find_mode(counts.actor);
+		cellAttribute.elevation = find_mode(counts.elevation);
+
+		var color;
+	
 		//Go through the canvases
 		//Terrain
-		if (tile.terrain === "OPEN")
+		if (cellAttribute.terrain === "OPEN")
 		{
-			color = this.getColorFromElevation(tile.elevation);
+			color = this.getColorFromElevation(cellAttribute.elevation);
 		}
-		else if (tile.terrain === "WATER")
+		else if (cellAttribute.terrain === "WATER")
 		{
 			color = g.colors.water;
 		}
@@ -92,27 +130,30 @@ View.prototype.setCell = function(cell)
 		//cell.strokeRect(g.colors.border, "terrain");
 		
 		//Terrirory
-		if (tile.territory !== false)
+		if (cellAttribute.territory !== false)
 		{
-			color = g.colors.team[tile.territory];
+			color = g.colors.team[cellAttribute.territory];
 			cell.fillRect(color, "territory");
 		}
 
 		//Actors
-		if (tile.actor)
+		if (cellAttribute.actor)
 		{
-			var char = g.chars[tile.actor.name];
-			var color = g.colors.team[tile.actor.team];
+			var char = g.chars[cellAttribute.actor.name];
+			var color = g.colors.team[cellAttribute.actor.team];
 			cell.fillText(char, color, "actors");
-			if (tile.actor.type === "BUILDING")
+			if (cellAttribute.actor.type === "BUILDING")
 				cell.strokeRect(color, "actors");
 		}
 		
-		//Select
-		if (tile.selected)
+		if (this.zoom === this.MAX_ZOOM)
 		{
-			color = g.colors.selectedTile;
-			cell.strokeRect(color, "select");
+			//Select
+			if (tiles[0].selected)
+			{
+				color = g.colors.selectedTile;
+				cell.strokeRect(color, "select");
+			}
 		}
 	}
 }
@@ -210,7 +251,7 @@ View.prototype.move = function(direction)
 	var index = ["UP", "RIGHT", "DOWN", "LEFT"].indexOf(direction);
 	var newX = this.viewX + Math.round(this.widthInCells / 2);
 	var newY = this.viewY + Math.round(this.heightInCells / 2);
-	var mI = g.constants.MOVE_INCREMENT;
+	var mI = g.constants.BASE_MOVE_INCREMENT * Math.pow(2, (this.MAX_ZOOM - this.zoom));
 
 	switch (index)
 	{
@@ -232,6 +273,24 @@ View.prototype.move = function(direction)
 	this.centerOn(newX, newY);
 }
 
+
+
+View.prototype.zoomIn = function()
+{
+	if (this.zoom === this.MAX_ZOOM)
+		return;
+	this.zoom++;
+	this.setAll();
+}
+
+
+View.prototype.zoomOut = function()
+{
+	if (this.zoom === this.MIN_ZOOM)
+		return;
+	this.zoom--;
+	this.setAll();
+}
 
 
 
@@ -256,18 +315,50 @@ View.prototype.getCellFromTile = function(tile){
 }
 
 
+
 //Returns the tile object corresponding to the cell object if it exists.
-View.prototype.getTileFromCell = function(cell)
+View.prototype.getTilesFromCell = function(cell)
 {
-	var x = cell.x;
-	var y = cell.y;
-	var tileX = this.viewX + x;
-	var tileY = this.viewY + y;
-	if (tileX < 0 || tileX >= g.game.map.width || tileY < 0 || tileY >= g.game.map.height)
+	var currX = cell.x;
+	var currY = cell.y;
+
+	/*
+	if (this.zoom = MAX_ZOOM) //If there's just one tile per cell
 	{
-		return false;
+		var tileX = this.viewX + x;
+		var tileY = this.viewY + y;
+		if (tileX < 0 || tileX >= g.game.map.width || tileY < 0 || tileY >= g.game.map.height)
+		{
+			return false;
+		}
+		return [g.game.map.getTile(tileX, tileY)];
 	}
-	return g.game.map.getTile(tileX, tileY);
+	*/
+
+	var returnArray = [];
+
+	//number of tiles per cell = 4 ^ (max_zoom - zoom)
+	var tilesPerEdge = Math.pow(2, (this.MAX_ZOOM - this.zoom));
+	var tilesPerCell = tilesPerEdge * tilesPerEdge;
+	var currViewX = this.viewX - (this.viewX % tilesPerEdge); //ViewX, viewX should be multiples of tiles per edge. That way, each tile group stays the same regardless of where the map is centered
+	var currViewY = this.viewY - (this.viewY % tilesPerEdge);
+	var x = currX * tilesPerEdge; //X and Y should be multiplied by tile edge. Because if we're zoomed in, each cell represents more than one tile
+	var y = currY * tilesPerEdge;
+
+	for (var tileX = currViewX + x ; tileX < currViewX + x + tilesPerEdge ; tileX++)
+	{
+		for (var tileY = currViewY + y ; tileY < currViewY + y + tilesPerEdge ; tileY++)
+		{
+			if (tileX < 0 || tileX >= g.game.map.width || tileY < 0 || tileY >= g.game.map.height)
+			{
+				continue;
+			}
+			returnArray.push(g.game.map.getTile(tileX, tileY));
+		}
+	}
+
+
+	return returnArray;
 }
 
 
@@ -466,12 +557,12 @@ View.prototype.initialize = function(){
 
 	//Set canvas style
 	$("canvas").css("position", "absolute")
+				.attr("height", this.canvasStyle.height)
+				.attr("width", this.canvasStyle.width);
 				//.css("top", this.canvasStyle.top + "px")
 				//.css("left", this.canvasStyle.left + "px")
 				//.css("width", this.canvasStyle.width + "px")
 				//.css("height", this.canvasStyle.height + "px")
-				.attr("width", this.canvasStyle.width)
-				.attr("height", this.canvasStyle.height);
 	$("#territory-canvas").css("opacity", ".4");
 
 	//Set canvas context stuff
@@ -480,7 +571,8 @@ View.prototype.initialize = function(){
 
 	//Set canvas container style (to fill in the space to make the floats right)
 	$("#canvases").css("width", this.widthInPixels + "px")
-					.css("height", this.heightInPixels + "px");
+					.css("height", this.heightInPixels + "px")
+					.css("background-color", "black");
 
 	//Fill cell array
 	var width = this.widthInCells;

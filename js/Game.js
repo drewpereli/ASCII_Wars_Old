@@ -3,6 +3,7 @@ function Game(width, height){
 
 	this.state = "DEFAULT";
 	this.lastState = "DEFAULT";
+	this.timeState = "PAUSED";
 
 	this.map;
 	this.actors = [];
@@ -198,13 +199,24 @@ Game.prototype.pause = function()
 	if (this.interval)
 	{
 		window.clearInterval(this.interval);
+		this.timeState = "PAUSED";
+		$("#play-pause-button").html("&#9193;");
 	}
 }
 
 Game.prototype.play = function()
 {
-
 	this.interval = window.setInterval(function(){g.game.tick();}, g.constants.TICK_INTERVAL);
+	this.timeState = "PLAYING";
+	$("#play-pause-button").html("&#9208;")
+}
+
+Game.prototype.playOrPause = function()
+{
+	if (this.timeState === "PLAYING")
+		this.pause();
+	else
+		this.play();
 }
 
 Game.prototype.next = function()

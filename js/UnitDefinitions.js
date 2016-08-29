@@ -10,7 +10,6 @@ g.constructors.units.LIGHT_INFANTRY.prototype = new Unit();
 
 g.constructors.units.LIGHT_INFANTRY.prototype.act = function()
 {
-	console.log("y");
 	this.timeUntilNextAction--;
 	if (this.timeUntilNextAction <= 0)
 	{

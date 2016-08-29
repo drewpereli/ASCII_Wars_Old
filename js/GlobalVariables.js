@@ -45,11 +45,18 @@ function GlobalVariables(){
 
 
 	this.constants = {
-		MOVE_INCREMENT: 3,
+		BASE_MOVE_INCREMENT: 4,
 		PRODUCTION_TIME_INCREASE_RATE: 2,
 		TICK_INTERVAL: 300,
 		MAX_DIVISIONS: 50,
+		MAX_ZOOM: 10,
+		MIN_ZOOM: 1,
 	}
+
+	this.terrains = [
+		"OPEN",
+		"WATER",
+	]
 	
 }
 

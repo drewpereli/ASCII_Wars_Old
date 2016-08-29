@@ -14,6 +14,16 @@
 			display: none;
 		}
 
+		.clear-left {
+			clear: left;
+		}
+		.clear-right {
+			clear: right;
+		}
+		.clear-both {
+			clear: both;
+		}
+
 		h3 {
 			width: 90%;
 			margin: auto;
@@ -28,6 +38,7 @@
 
 		#canvases{
 			<!--border: 1px solid black;-->
+			background-color: black;
 		}
 
 		#team-select{
@@ -50,6 +61,26 @@
 			border-radius: 5px;
 			padding: 5px;
 			margin: 10px;
+		}
+
+		#time-control-area-container
+		{
+			width: 35%;
+			padding-left: 13%;
+			
+		}
+
+		#time-control-button-container
+		{
+			width: 100%;
+			font-size: 3em;
+		}
+
+		.time-button
+		{
+			width: 10%;
+			margin-left: 10%;
+			margin-right: 10%;
 		}
 
 
@@ -147,6 +178,17 @@
 						Research stuff goes here
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="time-control-area-container" class="float-left clear-both">
+		<div id="time-control-button-container">
+			<div id="play-pause-button" class="time-button float-left">
+				&#9193;
+			</div>
+			<div id="next-button" class="time-button float-left">
+				&#9199;
 			</div>
 		</div>
 	</div>

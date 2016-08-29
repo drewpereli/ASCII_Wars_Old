@@ -8,7 +8,7 @@ Input.prototype.initialize = function()
 {
 	$(document).keydown(function(event)
 	{
-
+		var shiftDown = event.shiftKey;
 		switch(event.keyCode)
 		{
 			case 38:
@@ -23,14 +23,30 @@ Input.prototype.initialize = function()
 			case 37:
 				g.view.move("LEFT");
 				break;
+			case 61: //= / +
+				g.view.zoomIn();	
+				break;
+			case 173:
+				g.view.zoomOut();
+				break;
 		}
 	});
 
 
 	$("#select-canvas").click(function(event){
-		g.game.clickCanvasPixel(event.offsetX, event.offsetY);
+		//Only do it if we're all the way zoomed in
+		if (g.view.zoom === g.view.MAX_ZOOM)
+			g.game.clickCanvasPixel(event.offsetX, event.offsetY);
 	});
 
+
+	//Time control buttons
+	$("#play-pause-button").click(function(){
+		g.game.playOrPause();
+	});
+	$("#next-button").click(function(){
+		g.game.next();
+	});
 
 	//Can't click select lists unless you're in the default state
 	$("select").on("mousedown", function(event)
