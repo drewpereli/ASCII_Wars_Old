@@ -15,13 +15,15 @@ g.constructors.units.WORKER = function()
 	this.producer = {
 		productionTime: 5
 	}
+
+	this.takeAction = function()
+	{
+		this.moveRandomly();
+	}
 }
 
 
-g.constructors.units.WORKER.prototype.takeAction = function()
-{
-	this.moveRandomly();
-}
+
 
 
 
@@ -56,7 +58,6 @@ for (var name in g.constructors.units)
 	g.constructors.units[name].prototype = new Unit();
 	//Create a sample unit to play with
 	var unit = new unitMethod();
-	console.log(unit);
 	//Create a new producer for it
 	var producer = //String representation of the new constructor
 	`
