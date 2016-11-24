@@ -14,7 +14,7 @@ function Game(width, height){
 	this.width = width;
 	this.height = height;
 
-	this.ticks = 1;
+	this.ticks = 0;
 	this.changedTiles = [];
 
 	this.selectedTile = false;
@@ -50,10 +50,12 @@ Game.prototype.tick = function()
 {
 	for (var i in this.actors)
 	{
-		this.actors[i].act();
+		this.actors[i].tick();
 	}
 	g.view.set();
 	this.changedTiles = [];
+	this.ticks++;
+	g.view.updateTicks();
 }
 
 

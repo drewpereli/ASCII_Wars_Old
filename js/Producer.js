@@ -11,9 +11,8 @@ function Producer()
 
 Producer.prototype = new Building();
 
-Producer.prototype.act = function()
+Producer.prototype.tick = function()
 {
-	console.log("w");
 	this.timeUntilProduction--;
 	if (this.timeUntilProduction <= 0)
 	{

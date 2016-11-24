@@ -81,7 +81,7 @@ View.prototype.setCell = function(cell)
 	var tiles = this.getTilesFromCell(cell);
 	if (tiles.length > 0)
 	{
-		cellAttribute = {
+		cellAttribute = { //After looking at all the tiles represented by the cell, these attributes are set to the most commonly occuring corresponding attribute of the tiles
 			terrain: false,
 			territory: false,
 			actor: false,
@@ -139,7 +139,7 @@ View.prototype.setCell = function(cell)
 		//Actors
 		if (cellAttribute.actor)
 		{
-			var char = g.chars[cellAttribute.actor.name];
+			var char = cellAttribute.actor.char;
 			var color = g.colors.team[cellAttribute.actor.team];
 			cell.fillText(char, color, "actors");
 			if (cellAttribute.actor.type === "BUILDING")
@@ -291,6 +291,18 @@ View.prototype.zoomOut = function()
 	this.zoom--;
 	this.setAll();
 }
+
+
+
+
+
+
+
+View.prototype.updateTicks = function()
+{
+	$("#ticks").html(g.game.ticks);
+}
+
 
 
 
@@ -531,7 +543,7 @@ View.prototype.initiatlizeControlArea = function()
 		for (var name in g.constructors.buildings)
 		{
 			//Get the name and text
-			var unit = new g.constructors.buildings[name]()
+			var unit = new g.constructors.buildings[name]();
 			var text = unit.text;
 			var name = unit.name;
 			//Create the button

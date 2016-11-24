@@ -23,10 +23,10 @@ Input.prototype.initialize = function()
 			case 37:
 				g.view.move("LEFT");
 				break;
-			case 61: //= / +
+			case 61: // = OR +
 				g.view.zoomIn();	
 				break;
-			case 173:
+			case 173: // - 
 				g.view.zoomOut();
 				break;
 		}

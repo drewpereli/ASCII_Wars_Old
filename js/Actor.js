@@ -14,6 +14,14 @@ function Actor()
 
 
 //Actor.prototype.act = function(){}
+Actor.prototype.tick = function()
+{
+	this.timeUntilNextAction--;
+	if (this.timeUntilNextAction <= 0)
+	{
+		this.takeAction();
+	}
+}
 
 Actor.prototype.initialize = function(team, tile)
 {

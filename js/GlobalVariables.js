@@ -13,15 +13,9 @@ function GlobalVariables(){
 	this.constructors = 
 	{
 		buildings: {
-			LIGHT_INFANTRY_BUILDING: false,
-			//HEAVY_INFANTRY: false,
-			//TANK: false,
 		},
 
 		units: {
-			LIGHT_INFANTRY: false,
-			//HEAVY_INFANTRY: false,
-			//TANK: false,
 		}
 	}
 
@@ -38,9 +32,6 @@ function GlobalVariables(){
 	}
 
 	this.chars = {
-		COMMAND_CENTER: "\u2605",
-		LIGHT_INFANTRY_BUILDING: "i",
-		LIGHT_INFANTRY: "i",
 	}
 
 

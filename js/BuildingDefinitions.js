@@ -4,11 +4,24 @@ function CommandCenter()
 {
 	this.name = "COMMAND_CENTER";
 	this.text = "Command Center";
+	this.char = "\u2605";
 }
 
 CommandCenter.prototype = new Building();
 
-CommandCenter.prototype.act = function(){}
+CommandCenter.prototype.takeAction = function(){}
+
+
+/*
+g.constructors.buildings.WORKER_BUILDING = function()
+{
+	this.name = "WORKER_BUILDING";
+	this.text = "Worker School";
+	this.unitConstructor = g.constructors.units.WORKER;
+	this.productionTimeInit = 5;
+	this.productionTime = 5;
+	this.timeUntilProduction = 5;
+}
 
 
 
@@ -30,3 +43,6 @@ for (var name in g.constructors.buildings)
 {
 	g.constructors.buildings[name].prototype = new Producer();
 }
+*/
+
+
