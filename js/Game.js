@@ -229,11 +229,17 @@ Game.prototype.next = function()
 
 Game.prototype.initialize = function(numTeams)
 {
-
+	//Initialize the teams
 	for (var i = 0 ; i < numTeams ; i++)
 	{
 		this.teams.push(new Team());
 		this.teams[i].initialize(i);
+		//Initialize divisions for each team
+		for (var d in g.constants.MAX_DIVISIONS)
+		{
+			var division = new Division(this.teams[i], d);
+			division.initialize();
+		}
 	}
 
 	this.map = new Map(this.width, this.height);

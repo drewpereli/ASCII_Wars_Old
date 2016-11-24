@@ -68,7 +68,7 @@ for (var name in g.constructors.units)
 		this.productionTimeInit = ${unit.producer.productionTime};
 		this.productionTime = ${unit.producer.productionTime};
 		this.timeUntilProduction = ${unit.producer.productionTime};
-		//this.unitConstructor.prototype = new Unit();
+		this.unitConstructor.prototype = new Unit();
 	`;
 	producer = new Function(producer);
 	producer.prototype = new Producer();

@@ -24,7 +24,6 @@ Unit.prototype.move = function(tile)
 
 Unit.prototype.moveRandomly = function()
 {
-	console.log("in here");
 	var sibs = getShuffledArray(this.tile.siblings);
 	for (var i in sibs)
 	{
@@ -37,3 +36,16 @@ Unit.prototype.moveRandomly = function()
 		}
 	}
 }
+
+
+
+Unit.prototype.initialize = function(team, division, tile)
+{
+	this.standardInitialization(team, tile);
+	division.addUnit(this);
+	this.division = division;
+}
+
+
+
+

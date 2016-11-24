@@ -36,7 +36,7 @@ Producer.prototype.produceUnit = function()
 		var t = sibs[i];
 		if (t.actor === false && t.blocksMovement === false)
 		{
-			unit.initialize(this.team, t);
+			unit.initialize(this.team, 1, t);
 			this.unitsProduced++;
 			return true;
 		}
