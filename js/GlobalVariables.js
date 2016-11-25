@@ -5,7 +5,7 @@ function GlobalVariables(){
 	this.rand;
 	this.view;
 
-	this.fontSize = 10;
+	this.fontSize = 8;
 	this.fontFamily = 'sans-serif';
 
 
@@ -40,6 +40,7 @@ function GlobalVariables(){
 		MAP_HEIGHT: 30,
 		VIEW_WIDTH: 20, //In tiles
 		VIEW_HEIGHT: 20, 
+		VIEW_CELL_LENGTH: 25,
 		BASE_MOVE_INCREMENT: 4,
 		PRODUCTION_TIME_INCREASE_RATE: 2,
 		TICK_INTERVAL: 300,

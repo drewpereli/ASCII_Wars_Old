@@ -39,6 +39,12 @@ Input.prototype.initialize = function()
 			g.game.clickCanvasPixel(event.offsetX, event.offsetY);
 	});
 
+	$("#select-canvas").dblclick(function(event){
+		//Only do it if we're all the way zoomed in
+		if (g.view.zoom === g.view.MAX_ZOOM)
+			g.game.doubleClickCanvasPixel(event.offsetX, event.offsetY);
+	})
+
 
 	//Time control buttons
 	$("#play-pause-button").click(function(){
@@ -103,7 +109,6 @@ Input.prototype.initialize = function()
 		var idSplit = $(this).attr("id").split("_");
 		var teamNumber = idSplit[1];
 		var divisionNumber = idSplit[2];
-		console.log(idSplit);
 		var division = g.game.teams[teamNumber].divisions[divisionNumber];
 		division.moveToSelectedTile();
 	});

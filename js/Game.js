@@ -22,6 +22,8 @@ function Game(width, height){
 	this.interval = false;
 
 	this.lastUniqueId = 0;
+
+
 }
 
 
@@ -168,10 +170,21 @@ Game.prototype.clickCanvasPixel = function(x, y)
 	}
 	else if (this.state === "CONSTRUCTING")
 	{
-		if (tileClicked.blocksMovement === false 
+		if (tileClicked.blocksMovement() === false 
 				&& tileClicked.terrain !== "WATER"
 				&& tileClicked.territory === g.view.selectedTeam)
 			this.constructSelectedConstruction(tileClicked);
+	}
+}
+
+
+Game.prototype.doubleClickCanvasPixel = function(x, y)
+{
+	var tileClicked = this.getTileFromPixels(x, y);
+	if (this.state === "DEFAULT")
+	{
+		this.selectedTile = tileClicked;
+		this.DEBUG.spawnTestWorkerAtSelectedTile();
 	}
 }
 
@@ -247,4 +260,20 @@ Game.prototype.initialize = function(numTeams)
 	this.map = new Map(this.width, this.height);
 	this.map.initialize(i);	
 }
+
+
+Game.prototype.DEBUG = {
+	flatMap: true,
+	highlightPathfinding: false,
+};
+
+
+Game.prototype.DEBUG.spawnTestWorkerAtSelectedTile = function()
+{	
+	var w = new g.constructors.units.WORKER();
+	w.initialize(g.game.teams[0], g.game.teams[0].divisions[0], g.game.selectedTile);
+	g.view.setTile(g.game.selectedTile);
+}
+
+
 

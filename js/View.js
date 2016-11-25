@@ -10,7 +10,7 @@ function View(width, height){
 	this.viewX = 0; //Relative to the map
 	this.viewY = 0;
 
-	this.cellLength = 22;
+	this.cellLength = g.constants.VIEW_CELL_LENGTH;
 
 	this.widthInPixels = this.widthInCells * this.cellLength;
 	this.heightInPixels = this.heightInCells * this.cellLength;
@@ -154,6 +154,12 @@ View.prototype.setCell = function(cell)
 			{
 				color = g.colors.selectedTile;
 				cell.strokeRect(color, "select");
+			}
+			//If highlighted
+			if (tiles[0].DEBUG.highlight)
+			{
+				cell.fillRect("yellow", "terrain");
+				cell.fillText(tiles[0].DEBUG.char, "black", "select");
 			}
 		}
 	}
@@ -612,6 +618,7 @@ View.prototype.initiatlizeControlArea = function()
 	$("#control-area-0").removeClass("display-none");
 	//Set selected team
 	this.selectTeam(g.game.teams[0]);
+	this.selectControlArea("units");
 	this.selectDivision(this.selectedTeam.divisions[0]);
 }
 
@@ -659,6 +666,19 @@ View.prototype.initialize = function(){
 	this.initiatlizeControlArea();
 }
 
+
+
+
+View.prototype.DEBUG = {}
+
+View.prototype.DEBUG.highlightTile = function(tile)
+{
+	var cell = g.view.getCellFromTile(tile);
+	if (cell)
+	{
+		cell.fillRect("yellow", "terrain");
+	}
+}
 
 
 

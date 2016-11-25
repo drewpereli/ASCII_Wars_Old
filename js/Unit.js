@@ -12,9 +12,22 @@ Unit.prototype = new Actor();
 
 
 
+Unit.prototype.takeAction = function()
+{
+	if (this.division.behavior.action === "MOVING")
+	{
+		if (this.division.behavior.tile)
+			this.moveTowards(this.division.behavior.tile);
+		else
+			this.moveRandomly();
+	}
+}
+
 
 Unit.prototype.move = function(tile)
 {
+	if (tile.blocksMovement())
+		return false;
 	this.tile.setActor(false);
 	this.tile = tile;
 	this.tile.setActor(this);
@@ -24,10 +37,9 @@ Unit.prototype.move = function(tile)
 
 Unit.prototype.moveTowards = function(tile)
 {
-	console.log(tile);
 	var nextT = this.tile.getNextTileOnPath(tile);
 	if (nextT)
-		this.move(tile);
+		this.move(nextT);
 	else
 		this.moveRandomly();
 }
@@ -39,7 +51,7 @@ Unit.prototype.moveRandomly = function()
 	for (var i in sibs)
 	{
 		var sib = sibs[i];
-		if (sib.blocksMovement === false && sib.terrain !== "WATER")
+		if (sib.blocksMovement() === false && sib.terrain !== "WATER")
 		{
 			this.move(sib);
 			this.timeUntilNextAction = this.moveTime;

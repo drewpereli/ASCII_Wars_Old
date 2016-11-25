@@ -31,5 +31,5 @@ Division.prototype.moveToSelectedTile = function()
 
 Division.prototype.initialize = function()
 {
-	this.behavior.tile = this.team.commandCenter;
+	//this.behavior.tile = this.team.commandCenter;
 }

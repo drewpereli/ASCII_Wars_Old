@@ -148,10 +148,23 @@ Map.prototype.generate = function()
 				var maxElevation = 99;
 				var minElevation = -1 * gPs.seaLevel;
 				elevation = (elevation - min) * ((maxElevation - minElevation) / (max - min)) + minElevation;
-				tile.elevation = Math.round(elevation);	
+				if (g.game.DEBUG.flatMap)
+				{
+					tile.elevation = 50;
+				}
+				else
+				{
+					tile.elevation = Math.round(elevation);	
+				}
 				if (tile.elevation <= 0)
 				{
 					tile.setTerrain("WATER");
+				}
+				else
+				{
+					tile.setTerrain("OPEN");//This isn't necessary if the map gen works the first time, but if it doesn't,
+						//Then there may be tiles that were previously set to water that are now above sea level, so we have to 
+						//set them back
 				}
 			});
 		});
@@ -323,7 +336,6 @@ Map.prototype.getShuffledTiles = function()
 Map.prototype.reinitialize = function()
 {
 	this.tiles = [];
-	//Fill the level with wall tiles
 	for (var x = 0 ; x < this.width ; x++)
 	{
 		this.tiles.push([]);
@@ -338,9 +350,22 @@ Map.prototype.reinitialize = function()
 
 
 
+//f is a function that should be applies to all tiles
+Map.prototype.forAllTiles = function(f)
+{
+	for (var x = 0 ; x < this.width ; x++)
+	{
+		for (var y = 0 ; y < this.height ; y++)
+		{
+			var tile = this.getTile(x, y);
+			f(tile);
+		}
+	}
+}
+
+
 Map.prototype.initialize = function()
 {
-	//Fill the level with wall tiles
 	for (var x = 0 ; x < this.width ; x++)
 	{
 		this.tiles.push([]);

@@ -20,7 +20,10 @@ g.constructors.units.WORKER = function()
 	{
 		if (this.division.behavior.action === "MOVING")
 		{
-			this.moveTowards(this.division.behavior.tile);
+			if (this.division.behavior.tile)
+				this.moveTowards(this.division.behavior.tile);
+			else
+				this.moveRandomly();
 		}
 	}
 }
