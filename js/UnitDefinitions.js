@@ -18,7 +18,10 @@ g.constructors.units.WORKER = function()
 
 	this.takeAction = function()
 	{
-		this.moveRandomly();
+		if (this.division.behavior.action === "MOVING")
+		{
+			this.moveTowards(this.division.behavior.tile);
+		}
 	}
 }
 

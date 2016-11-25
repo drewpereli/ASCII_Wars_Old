@@ -22,6 +22,17 @@ Unit.prototype.move = function(tile)
 
 
 
+Unit.prototype.moveTowards = function(tile)
+{
+	console.log(tile);
+	var nextT = this.tile.getNextTileOnPath(tile);
+	if (nextT)
+		this.move(tile);
+	else
+		this.moveRandomly();
+}
+
+
 Unit.prototype.moveRandomly = function()
 {
 	var sibs = getShuffledArray(this.tile.siblings);

@@ -24,5 +24,6 @@ Building.prototype.initialize = function(team, tile)
 				this.team.addTileToTerritory(tile);
 			}
 		}
+		this.team.commandCenter = this;
 	}
 }
