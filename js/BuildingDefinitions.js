@@ -5,11 +5,13 @@ function CommandCenter()
 	this.name = "COMMAND_CENTER";
 	this.text = "Command Center";
 	this.char = "\u2605";
+	this.char = "c";
 }
 
 CommandCenter.prototype = new Building();
 
 CommandCenter.prototype.takeAction = function(){}
+
 
 
 /*

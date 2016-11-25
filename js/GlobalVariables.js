@@ -36,6 +36,10 @@ function GlobalVariables(){
 
 
 	this.constants = {
+		MAP_WIDTH: 30,
+		MAP_HEIGHT: 30,
+		VIEW_WIDTH: 20, //In tiles
+		VIEW_HEIGHT: 20, 
 		BASE_MOVE_INCREMENT: 4,
 		PRODUCTION_TIME_INCREASE_RATE: 2,
 		TICK_INTERVAL: 300,
@@ -56,8 +60,8 @@ GlobalVariables.prototype.initialize = function()
 {
 	this.rand = new Random(Math.floor(Math.random() * 100));
 	this.input = new Input();
-	this.game = new Game(100, 100);
-	this.view = new View(20, 20);
+	this.game = new Game(this.constants.MAP_WIDTH, this.constants.MAP_HEIGHT);
+	this.view = new View(this.constants.VIEW_WIDTH, this.constants.VIEW_HEIGHT);
 
 	this.game.initialize(2);
 	this.view.initialize();
@@ -65,3 +69,9 @@ GlobalVariables.prototype.initialize = function()
 }
 
 var g = new GlobalVariables();
+
+
+
+
+
+

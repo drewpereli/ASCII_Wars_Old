@@ -83,12 +83,6 @@ Game.prototype.setAllTilesToUnchanged = function()
 */
 
 
-Game.prototype.spawnActor = function(actor, team, tile)
-{
-	actor.initialize(team, tile);
-	this.actors.push(actor);
-	this.teams[team].spawnActor(actor);
-}
 
 Game.prototype.killActor = function(actor)
 {
@@ -96,6 +90,18 @@ Game.prototype.killActor = function(actor)
 	var index = this.actors.indexOf(unit);
 	this.actors.splice(index, 1);
 	delete unit;
+}
+
+
+Game.prototype.getActorById = function(id)
+{
+	for (var aIndex in this.actors)
+	{
+		var a = this.actors[aIndex];
+		if (a.uniqueId == id)
+			return a;
+	}
+	return false;
 }
 
 
@@ -162,7 +168,9 @@ Game.prototype.clickCanvasPixel = function(x, y)
 	}
 	else if (this.state === "CONSTRUCTING")
 	{
-		if (tileClicked.blocksMovement === false && tileClicked.terrain !== "WATER")
+		if (tileClicked.blocksMovement === false 
+				&& tileClicked.terrain !== "WATER"
+				&& tileClicked.territory === g.view.selectedTeam)
 			this.constructSelectedConstruction(tileClicked);
 	}
 }
@@ -234,12 +242,6 @@ Game.prototype.initialize = function(numTeams)
 	{
 		this.teams.push(new Team());
 		this.teams[i].initialize(i);
-		//Initialize divisions for each team
-		for (var d in g.constants.MAX_DIVISIONS)
-		{
-			var division = new Division(this.teams[i], d);
-			division.initialize();
-		}
 	}
 
 	this.map = new Map(this.width, this.height);

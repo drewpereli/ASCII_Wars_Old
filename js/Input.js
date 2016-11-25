@@ -62,7 +62,12 @@ Input.prototype.initialize = function()
 	//Set select list inputs
 	$("#team-select").change(function(){
 		var selectedTeam = $(this).val();
-		g.view.selectTeam(selectedTeam);
+		g.view.selectTeam(g.game.teams[selectedTeam]);
+	});
+
+	$(".division-select").change(function(){
+		var selectedDivision = $(this).val();
+		g.view.selectDivision(g.view.selectedTeam.divisions[selectedDivision]);
 	});
 
 	//Control area select list inputs
@@ -81,13 +86,34 @@ Input.prototype.initialize = function()
 
 
 
+
 	//Construction buttons inputs
 	$(".construct-button").click(function()
 	{
 		var building = $(this).attr("data-tag");
 		g.game.clickConstructButton(building);
 	});
+
+
+
+
+
+	$(".move-to-selected-tile-btn").click(function()
+	{
+		var idSplit = $(this).attr("id").split("_");
+		var teamNumber = idSplit[1];
+		var divisionNumber = idSplit[2];
+		console.log(idSplit);
+		var division = g.game.teams[teamNumber].divisions[divisionNumber];
+		division.moveToSelectedTile();
+	});
+
 }
+
+
+
+
+
 
 
 

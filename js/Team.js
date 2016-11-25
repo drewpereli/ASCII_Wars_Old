@@ -10,48 +10,19 @@ function Team()
 }
 
 
-Team.prototype.spawnActor = function(actor)
+Team.prototype.addBuilding = function(building)
 {
-	if (actor.type === "UNIT")
-	{
-
-	}
-	else if (actor.type === "BUILDING")
-	{
-		this.buildings.push(actor);
-		if (actor.name === "COMMAND_CENTER")
-		{
-			this.spawnCommandCenter(actor);
-		}
-	}
+	this.buildings.push(building);
 }
 
-Team.prototype.spawnCommandCenter = function(cC)
-{
-	this.commandCenter = cC;
 
-	//Initialize cc territory
-	for (var x = -3 ; x <= 3 ; x++)
-	{
-		for (var y = -3 ; y <= 3 ; y++)
-		{
-			if (Math.abs(x) === 3 && Math.abs(y) === 3)
-			{
-				continue;
-			}
-
-			var tile = g.game.map.getTile(cC.tile.x + x, cC.tile.y + y);
-			this.addTileToTerritory(tile);
-		}
-	}
-}
 
 Team.prototype.addTileToTerritory = function(tile)
 {
 	if (this.territory.indexOf(tile) === -1)
 	{
 		this.territory.push(tile);
-		tile.setTerritory(this.number);
+		tile.setTerritory(this);
 	}
 }
 
@@ -61,6 +32,12 @@ Team.prototype.addTileToTerritory = function(tile)
 
 Team.prototype.initialize = function(number)
 {
-
 	this.number = number;
+	//Create divisions
+	for (var d = 0 ; d < g.constants.MAX_DIVISIONS ; d++)
+	{
+		var division = new Division(this, d);
+		this.divisions.push(division);
+		division.initialize();
+	}
 }

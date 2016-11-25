@@ -7,6 +7,7 @@ function Producer()
 	this.productionTime;
 	this.timeUntilProduction;
 	this.unitsProduced = 0;
+	this.producing = true;
 }
 
 Producer.prototype = new Building();
@@ -16,13 +17,16 @@ Producer.prototype.tick = function()
 	this.timeUntilProduction--;
 	if (this.timeUntilProduction <= 0)
 	{
-		var succesful = this.produceUnit();
-		if (succesful)
+		if (this.producing)
 		{
-			this.setProductionTime();
-			this.timeUntilProduction = this.productionTime;
+			var succesful = this.produceUnit();
+			if (succesful)
+			{
+				this.setProductionTime();
+				this.timeUntilProduction = this.productionTime;
+			}
+			//If not succesful, it's because there isn't an open tile. Try again next round
 		}
-		//If not succesful, it's because there isn't an open tile. Try again next round
 	}
 }
 
@@ -36,7 +40,7 @@ Producer.prototype.produceUnit = function()
 		var t = sibs[i];
 		if (t.actor === false && t.blocksMovement === false)
 		{
-			unit.initialize(this.team, 1, t);
+			unit.initialize(this.team, this.team.divisions[0], t);
 			this.unitsProduced++;
 			return true;
 		}
@@ -47,6 +51,12 @@ Producer.prototype.produceUnit = function()
 Producer.prototype.setProductionTime = function()
 {
 	this.productionTime = Math.round(this.productionTimeInit * Math.pow(g.constants.PRODUCTION_TIME_INCREASE_RATE, this.unitsProduced));
+}
+
+
+Producer.prototype.toggle = function()
+{
+	this.producing = !this.producing;
 }
 
 

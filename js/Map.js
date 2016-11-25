@@ -171,10 +171,14 @@ Map.prototype.generate = function()
 				//console.log((g.game.map.width / 2) + 2, (g.game.map.height / 2) + 2, g.game.map.width - 2, g.game.map.height - 2);
 				//console.log(tile.x, tile.y);
 			}
-			//console.log(tile);
-			var team = i;
+			if (tile === false)
+			{
+				g.game.map.generate();
+				return;
+			}
+			var team = g.game.teams[i];
 			var cC = new CommandCenter();
-			g.game.spawnActor(cC, team, tile);
+			cC.initialize(team, tile);
 		}
 
 		g.view.hideLoadingMessage();

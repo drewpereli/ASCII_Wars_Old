@@ -15,7 +15,8 @@ function View(width, height){
 	this.widthInPixels = this.widthInCells * this.cellLength;
 	this.heightInPixels = this.heightInCells * this.cellLength;
 
-	this.selectedTeam = 0;
+	this.selectedTeam;
+	this.selectedDivision;
 
 	this.zoom = g.constants.MAX_ZOOM; //10 is max zoom
 	this.MAX_ZOOM = g.constants.MAX_ZOOM;
@@ -140,7 +141,7 @@ View.prototype.setCell = function(cell)
 		if (cellAttribute.actor)
 		{
 			var char = cellAttribute.actor.char;
-			var color = g.colors.team[cellAttribute.actor.team];
+			var color = g.colors.team[cellAttribute.actor.team.number];
 			cell.fillText(char, color, "actors");
 			if (cellAttribute.actor.type === "BUILDING")
 				cell.strokeRect(color, "actors");
@@ -409,11 +410,18 @@ View.prototype.getColorFromElevation = function(elevation)
 
 View.prototype.addBuildingToTable = function(building)
 {
-	var team = building.team;
+	var team = building.team.number;
 	var table = $("#control-area-" + team).find(".buildings-table");
 	var row = $(table).find(".buildings-table-entry-template").clone();
-	$(row).attr("id", "building-table-row-" + building.uniqueId);
+	$(row).attr("id", "building-table-row_" + building.uniqueId);
 	$(row).removeClass("display-none").removeClass("buildings-table-entry-template");
+	//Add checkbox event listener
+	$(row).find(".producer-switch").change(function()
+	{
+		var pId = $(this).parent().parent().attr("id").split("_")[1];
+		var p = g.game.getActorById(pId);
+		p.toggle();
+	})
 	$(table).append(row);
 }
 
@@ -463,9 +471,16 @@ View.prototype.hideLoadingMessage = function()
 View.prototype.selectTeam = function(t)
 {
 	this.selectedTeam = t;
+	if (typeof t !== "object")
+	{
+		var e = new Error("Team in g.view.selectTeam must be a team object");
+		console.log(e.stack);
+		throw(e);
+		return;
+	}
 	$(".control-area").each(function(index, element)
 		{
-			if (index == t)
+			if (index == t.number)
 			{
 				$(this).removeClass("display-none");
 			}
@@ -477,9 +492,24 @@ View.prototype.selectTeam = function(t)
 }
 
 
+
+View.prototype.selectDivision = function(d)
+{
+	this.selectedDivision = d;
+	$("#control-area-" + this.selectedTeam.number).find(".units-control-area").each(function(index, element)
+	{
+		if(index == d.number)
+			$(element).removeClass("display-none");
+		else
+			$(element).addClass("display-none");
+	})
+}
+
+
+
 View.prototype.selectControlArea = function(a)
 {
-	var currentControlArea = $("#control-area-" + this.selectedTeam);
+	var currentControlArea = $("#control-area-" + this.selectedTeam.number);
 	$(currentControlArea).find(".buildings-control-area-container").addClass("display-none");
 	$(currentControlArea).find(".units-control-area-container").addClass("display-none");
 	$(currentControlArea).find(".research-control-area-container").addClass("display-none");
@@ -500,7 +530,7 @@ View.prototype.selectControlArea = function(a)
 
 View.prototype.selectBuildingControlArea = function(a)
 {
-	var currentControlArea = $("#control-area-" + this.selectedTeam);
+	var currentControlArea = $("#control-area-" + this.selectedTeam.number);
 	$(currentControlArea).find(".buildings-construct").addClass("display-none");
 	$(currentControlArea).find(".buildings-list").addClass("display-none");
 	if (a === "construct")
@@ -532,12 +562,30 @@ View.prototype.initiatlizeControlArea = function()
 		$(currentControlArea).attr("id", "control-area-" + i);
 		//$(currentControlArea).css("background-color", g.colors.team[i]);
 		$("#control-area-container").append(currentControlArea);
+
+
+		//Unit stuff
 		//Then set the squad select list
+
+		var unitControlArea = $(currentControlArea).find(".units-control-area-container");
 		var divisionSelect = $(currentControlArea).find(".division-select");
+		var aIContainerTemplateBase = $(currentControlArea).find(".units-control-area");//Clone the ai container template, which we then clone to populate each division's ai window
+		var aIContainerTemplate = $(aIContainerTemplateBase).clone();
+		$(aIContainerTemplateBase).remove();//Remove the existing template
+
+
 		for (var d = 0 ; d < g.constants.MAX_DIVISIONS ; d++)
 		{
+			//Add an option in the division select dropdown menu
 			$(divisionSelect).append('<option value="' + d + '">' + (d + 1) + '</option>');
+			//Add an AI panel for this division
+			var currAIContainer = $(aIContainerTemplate).clone();
+			$(currAIContainer).find("input.move-to-selected-tile-btn")
+				.attr("id", "move-to-selected-tile_" + i + "_" + d);
+			$(unitControlArea).append(currAIContainer);
 		}
+
+		//Building stuff
 		//Set up the building construct buttons
 		var constructArea = $(currentControlArea).find(".buildings-construct");
 		for (var name in g.constructors.buildings)
@@ -562,6 +610,9 @@ View.prototype.initiatlizeControlArea = function()
 	}
 	$(controlArea).remove();
 	$("#control-area-0").removeClass("display-none");
+	//Set selected team
+	this.selectTeam(g.game.teams[0]);
+	this.selectDivision(this.selectedTeam.divisions[0]);
 }
 
 

@@ -111,7 +111,17 @@
 				<div><span id="tile-info-owner"></span> territory</div>
 			</div>
 		</div>
+		<div id="unit-info">
+			<h3>Selected Unit</h3>
+			<div id="unit-info-inner" class="hidden">
+				<div>Team <span id="unit-info-team"></span></div>
+				<div>Division <span id="unit-info-division"></span></div>
+
+				<div>Health: <span id="unit-info-health"></span></div>
+			</div>
+		</div>
 	</div>
+
 	
 	<div id="canvases" class="float-left">
 		<!-- Canvases -->
@@ -150,9 +160,10 @@
 									<th>On</th>
 									<th>Output</th>
 								</tr>
-								<tr class="buildings-table-entry-template display-none">
+								<tr class="buildings-table-entry-template display-none" 
+									id="building-table-row_UNIQUEID">
 									<td class="buildings-table-on-cell">
-										<input type="checkbox" value="on" /> On
+										<input type="checkbox" value="on" checked="checked" class="producer-switch"/> On
 									</td>
 									<td class="buildings-table-output-cell">
 										Cycle from: 
@@ -171,11 +182,16 @@
 					Division: 
 					<select class="division-select">
 					</select>
-					<div class="units-control-area">
+					<div class="units-control-area display-none">
 						Unit AI stuff goes here
+						<div class="units-control-inner">
+							<input type="button" 
+								class="move-to-selected-tile-btn"
+								id="move-to-selected-tile_TEAM#_DIVISION#" value="Move to Selected Tile" />
+						</div>
 					</div>		
 				</div>
-				<div class="research-control-area-container  display-none">
+				<div class="research-control-area-container display-none">
 					<div class="research-control-area">
 						Research stuff goes here
 					</div>
@@ -230,7 +246,7 @@
 	<script src="js/BuildingDefinitions.js" type="text/javascript"></script>
 	<script src="js/UnitDefinitions.js" type="text/javascript"></script>
 	<script src="js/Team.js" type="text/javascript"></script>
-	<script src="js/.js"></script>
+	<script src="js/Division.js"></script>
 	<script src="js/.js"></script>
 	<script src="js/.js"></script>
 	<script src="js/.js"></script>
