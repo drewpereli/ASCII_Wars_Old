@@ -358,7 +358,9 @@ Map.prototype.forAllTiles = function(f)
 		for (var y = 0 ; y < this.height ; y++)
 		{
 			var tile = this.getTile(x, y);
-			f(tile);
+			var keepGoing = f(tile);
+			if (keepGoing === false)
+				return;
 		}
 	}
 }

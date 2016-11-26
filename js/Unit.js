@@ -31,6 +31,7 @@ Unit.prototype.move = function(tile)
 	this.tile.setActor(false);
 	this.tile = tile;
 	this.tile.setActor(this);
+	this.timeUntilNextAction = this.moveTime;
 }
 
 
@@ -51,6 +52,8 @@ Unit.prototype.moveRandomly = function()
 	for (var i in sibs)
 	{
 		var sib = sibs[i];
+		if (sib === false)
+			continue;
 		if (sib.blocksMovement() === false && sib.terrain !== "WATER")
 		{
 			this.move(sib);

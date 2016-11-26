@@ -11,20 +11,9 @@ g.constructors.units.WORKER = function()
 	this.name = "WORKER";
 	this.text = "Worker";
 	this.char = "w";
-	this.moveTime = 3;
+	this.moveTime = 1;
 	this.producer = {
 		productionTime: 5
-	}
-
-	this.takeAction = function()
-	{
-		if (this.division.behavior.action === "MOVING")
-		{
-			if (this.division.behavior.tile)
-				this.moveTowards(this.division.behavior.tile);
-			else
-				this.moveRandomly();
-		}
 	}
 }
 

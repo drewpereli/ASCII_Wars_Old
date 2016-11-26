@@ -184,7 +184,7 @@ Game.prototype.doubleClickCanvasPixel = function(x, y)
 	if (this.state === "DEFAULT")
 	{
 		this.selectedTile = tileClicked;
-		this.DEBUG.spawnTestWorkerAtSelectedTile();
+		this.DEBUG.spawnSquareOfWorkersAtSelectedTile(3);
 	}
 }
 
@@ -268,11 +268,30 @@ Game.prototype.DEBUG = {
 };
 
 
+Game.prototype.DEBUG.spawnTestWorker = function(tile)
+{
+	var w = new g.constructors.units.WORKER();
+	w.initialize(g.game.teams[0], g.game.teams[0].divisions[0], tile);
+	g.view.setTile(tile);
+}
+
+
 Game.prototype.DEBUG.spawnTestWorkerAtSelectedTile = function()
 {	
-	var w = new g.constructors.units.WORKER();
-	w.initialize(g.game.teams[0], g.game.teams[0].divisions[0], g.game.selectedTile);
-	g.view.setTile(g.game.selectedTile);
+	g.game.DEBUG.spawnTestWorker(g.game.selectedTile);
+}
+
+Game.prototype.DEBUG.spawnSquareOfWorkersAtSelectedTile = function(squareLength)
+{
+	var l = Math.ceil(squareLength / 2);
+	for (var x = g.game.selectedTile.x - l ; x < g.game.selectedTile.x + l ; x++)
+	{
+		for (var y = g.game.selectedTile.y - l ; y < g.game.selectedTile.y + l ; y++)
+		{
+			var t = g.game.map.getTile(x, y);
+			g.game.DEBUG.spawnTestWorker(t);
+		}
+	}
 }
 
 

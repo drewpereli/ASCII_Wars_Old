@@ -96,8 +96,10 @@ Tile.prototype.getNextTileOnPath = function(tile)
 		//If I undersatnd correctly, the lower this is, the faster the algorithm is. The higher it is, the more likely it is that the most effective path will be returned.
 	//var eucDistanceMultiplier = 0; //How important short euclidean distance is to determinign whcih tile to search next
 		//Behaves opposite to weightMultiplier when increased/decreased
+	var tilesAltered = [];
 	var checked = []; //Tiles that have already been checked.
 	tile.pF.pathLengthFromTarget = 0;
+	tilesAltered.push(tile);
 	var toCheck = [tile]; //A stack of tiles to be checked. The stack pops the last element in the array
 	while(toCheck.length > 0)
 	{
@@ -109,6 +111,7 @@ Tile.prototype.getNextTileOnPath = function(tile)
 		}
 
 		//Check the tile with the lowest pF distance to target
+		//INNEFICIENT -- we should just add the tiles to a stack ordered by shortest path length
 		var minDistance = 9999999999999999999;
 		var closestTile = false
 		for (var tI in toCheck)
@@ -131,37 +134,18 @@ Tile.prototype.getNextTileOnPath = function(tile)
 			//If the current sibling is this tile, return the sibling with the shortest pathLengthtoTarget
 			if (currentSib === this)
 			{
-				//Clear the pF data from all the tiles
-				for (var i in checked)
+				if (g.game.DEBUG.highlightPathfinding)
 				{
-					var t = checked[i];
-					//Debug
-					if (g.game.DEBUG.highlightPathfinding)
+					for (var i in checked)
 					{
+						var t = checked[i];
+						//Debug
 						g.game.changedTiles.push(t);
 						t.DEBUG.highlight = true;
 						t.DEBUG.char = t.pF.pathLengthFromTarget.toFixed(1);
 					}
-					for (var pFAttr in t.pF)
-					{
-						t.pF[pFAttr] = false;
-					}
 				}
-				//Take away the path finding info in "to check" as well (beacuse pFDistances were set in that array)
-				for (var i in toCheck)
-				{
-					var t = toCheck[i];
-					for (var pFAttr in t.pF)
-					{
-						t.pF[pFAttr] = false;
-					}
-				}
-				//Take away the pathfinding info on "tileBeingChecked", whic isn't in either array.
-				var t = tileBeingChecked;
-				for (var pFAttr in t.pF)
-				{
-					t.pF[pFAttr] = false;
-				}
+				clearPFData();
 				return tileBeingChecked;
 			}
 			if (currentSib.blocksMovement())
@@ -172,6 +156,7 @@ Tile.prototype.getNextTileOnPath = function(tile)
 			if (currentSib.pF.pathLengthFromTarget !== false && currentSib.pF.pathLengthFromTarget <= pathLength)
 				continue;
 			currentSib.pF.pathLengthFromTarget = pathLength;
+			tilesAltered.push(currentSib);
 			//currentSib.pF.eucDistanceFromOrigin = currentSib.getDistance(this);
 			//Add current sib to the "to check" array
 			//If it's not already in the "toCheck" array, add it
@@ -183,9 +168,44 @@ Tile.prototype.getNextTileOnPath = function(tile)
 		//Add the tile we just checked to the "checked" array, and set it's checked attribute to "true"
 		checked.push(tileBeingChecked);
 		tileBeingChecked.pF.checked = true;
+		tilesAltered.push(tileBeingChecked);
 	}
 	//If it gets here, no path to the target was found
+	clearPFData();
 	return false;
+
+	function clearPFData()
+	{
+		//Clear the pathfinding data from all tiles.
+		for (var tI in tilesAltered)
+		{
+			t = tilesAltered[tI];
+			for (var pFAttr in t.pF)
+			{
+				t.pF[pFAttr] = false;
+			}
+		}
+		//Search all tiles to see if some stuff is still set that shouldn't be 
+		var error = false;
+		g.game.map.forAllTiles(function(t)
+		{
+			if (t.pF.pathLengthFromTarget !== false)
+			{
+				error = true;
+			}
+			if (t.pF.checked !== false)
+			{
+				error = true;
+			}
+			if (error)
+				return false;
+		});
+		if (error)
+		{
+			var e = new Error("Pathfinding variables still set in a tile when they should be false");
+			throw(e);
+		}
+	}
 }
 
 
