@@ -41,6 +41,7 @@ function GlobalVariables(){
 		VIEW_WIDTH: 20, //In tiles
 		VIEW_HEIGHT: 20, 
 		VIEW_CELL_LENGTH: 25,
+		ANIMATION_FRAME_TIME: 40, //Time between animation frames in milliseconds
 		BASE_MOVE_INCREMENT: 4,
 		PRODUCTION_TIME_INCREASE_RATE: 2,
 		TICK_INTERVAL: 300,

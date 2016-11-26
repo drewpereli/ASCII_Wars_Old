@@ -209,7 +209,64 @@ Tile.prototype.getNextTileOnPath = function(tile)
 }
 
 
+//Looks at increasingly large circles (up until radius=100) until it finds an open tile
+Tile.prototype.getClosestOpenTile = function()
+{
+	var increment = .3; //The smaller this is, the more likely it is that the actual closest tile will be return
+						//The larger it is, the faster the algorithm will find a pretty close tile
+	for (var r = 0 ; r < 100 ; r += increment)
+	{
+		var circle = this.getOpenCircle(r, r + increment);
+		if (circle)
+		{
+			return circle[g.rand.nextInt(0, circle.length)];
+		}
+	}
+}
 
+//Gets all the tiles thar are between minRadius (inclusive) and maxRadius(exclusive) away from this tile
+Tile.prototype.getCircle = function(minRadius, maxRadius)
+{
+	var circle = []; //The tiles in the circle
+	for (var x = this.x - Math.ceil(maxRadius) ; x <= this.x + Math.ceil(maxRadius) ; x++)
+	{
+		for (var y = this.y - Math.ceil(maxRadius) ; y <= this.y + Math.ceil(maxRadius) ; y++)
+		{
+			var t = g.game.map.getTile(x, y);
+			if (t === false)
+				continue;
+			var d = this.getDistance(t);
+			if (d >= minRadius && d < maxRadius)
+			{
+				circle.push(t);
+			}
+		}
+	}
+	return circle;
+}
+
+//Works exact like "getCircle", but only returns tiles that don't block movement in the array. Returns false if it doesn't find anything
+Tile.prototype.getOpenCircle = function(minRadius, maxRadius)
+{
+	var circle = []; //The tiles in the circle
+	for (var x = this.x - Math.ceil(maxRadius) ; x <= this.x + Math.ceil(maxRadius) ; x++)
+	{
+		for (var y = this.y - Math.ceil(maxRadius) ; y <= this.y + Math.ceil(maxRadius) ; y++)
+		{
+			var t = g.game.map.getTile(x, y);
+			if (t === false)
+				continue;
+			if (t.blocksMovement())
+				continue;
+			var d = this.getDistance(t);
+			if (d >= minRadius && d < maxRadius)
+			{
+				circle.push(t);
+			}
+		}
+	}
+	return circle.length > 0 ? circle : false;
+}
 
 //Returns the multiplier for moving from this tile into the sibling tile (index) fed to it
 Tile.prototype.getMoveWeight = function(sibIndex)
@@ -220,7 +277,7 @@ Tile.prototype.getMoveWeight = function(sibIndex)
 	var isDiagonal = sibIndex % 2 === 1; //If sib index is odd, the sib is diagonal
 	if (isDiagonal)
 		weight *= Math.sqrt(2);
-	weight *= Math.exp(elDiff/7);
+	weight *= Math.exp(elDiff/10);
 	return weight;
 }
 

@@ -28,21 +28,28 @@ Unit.prototype.move = function(tile)
 {
 	if (tile.blocksMovement())
 		return false;
+	var sibIndex = this.tile.siblings.indexOf(tile);
+	this.timeUntilNextAction = Math.ceil(this.moveTime * this.tile.getMoveWeight(sibIndex));
 	this.tile.setActor(false);
 	this.tile = tile;
 	this.tile.setActor(this);
-	this.timeUntilNextAction = this.moveTime;
 }
 
 
 
 Unit.prototype.moveTowards = function(tile)
 {
-	var nextT = this.tile.getNextTileOnPath(tile);
-	if (nextT)
+	var closestOpenTile = tile.getClosestOpenTile(this.tile);
+	//If it's closer than the actor is, move to it
+	if (closestOpenTile.getDistance(tile) < this.tile.getDistance(tile))
+	{
+		var nextT = this.tile.getNextTileOnPath(closestOpenTile);
 		this.move(nextT);
-	else
-		this.moveRandomly();
+	}
+	else//stay where we are
+	{
+		return;
+	}
 }
 
 
@@ -57,8 +64,6 @@ Unit.prototype.moveRandomly = function()
 		if (sib.blocksMovement() === false && sib.terrain !== "WATER")
 		{
 			this.move(sib);
-			this.timeUntilNextAction = this.moveTime;
-			return;
 		}
 	}
 }

@@ -58,6 +58,31 @@ Game.prototype.tick = function()
 	this.changedTiles = [];
 	this.ticks++;
 	g.view.updateTicks();
+	this.doAnimations();
+}
+
+
+Game.prototype.doAnimations = function()
+{
+	this.animating = true;
+	animateFrame(0); //A recursive funtion that does the animations, then does another tick if we're in the "playing" time state
+
+	function animateFrame(frameNumber)
+	{
+		if (frameNumber === 10)
+		{
+			if (g.game.timeState === "PLAYING")
+			{
+				g.game.animating = false;
+				g.game.tick();
+			}
+			return;
+		}
+		else
+		{
+			setTimeout(function(){animateFrame(frameNumber + 1);}, g.constants.ANIMATION_FRAME_TIME);
+		}
+	}
 }
 
 
@@ -184,7 +209,7 @@ Game.prototype.doubleClickCanvasPixel = function(x, y)
 	if (this.state === "DEFAULT")
 	{
 		this.selectedTile = tileClicked;
-		this.DEBUG.spawnSquareOfWorkersAtSelectedTile(3);
+		this.DEBUG.spawnSquareOfWorkersAtSelectedTile(1);
 	}
 }
 
@@ -219,18 +244,19 @@ Game.prototype.getTileFromPixels = function(x, y)
 
 Game.prototype.pause = function()
 {
-	if (this.interval)
-	{
-		window.clearInterval(this.interval);
+	//if (this.interval)
+	//{
+		//window.clearInterval(this.interval);
 		this.timeState = "PAUSED";
 		$("#play-pause-button").html("&#9193;");
-	}
+	//}
 }
 
 Game.prototype.play = function()
 {
-	this.interval = window.setInterval(function(){g.game.tick();}, g.constants.TICK_INTERVAL);
+	//this.interval = window.setInterval(function(){g.game.tick();}, g.constants.TICK_INTERVAL);
 	this.timeState = "PLAYING";
+	this.tick();
 	$("#play-pause-button").html("&#9208;")
 }
 
@@ -244,7 +270,8 @@ Game.prototype.playOrPause = function()
 
 Game.prototype.next = function()
 {
-	this.tick();
+	if (this.animating === false)
+		this.tick();
 }
 
 
@@ -262,8 +289,12 @@ Game.prototype.initialize = function(numTeams)
 }
 
 
+
+/*Debug stuff*/
+
+
 Game.prototype.DEBUG = {
-	flatMap: true,
+	flatMap: false,
 	highlightPathfinding: false,
 };
 
@@ -283,10 +314,10 @@ Game.prototype.DEBUG.spawnTestWorkerAtSelectedTile = function()
 
 Game.prototype.DEBUG.spawnSquareOfWorkersAtSelectedTile = function(squareLength)
 {
-	var l = Math.ceil(squareLength / 2);
-	for (var x = g.game.selectedTile.x - l ; x < g.game.selectedTile.x + l ; x++)
+	var l = Math.floor(squareLength / 2);
+	for (var x = g.game.selectedTile.x - l ; x <= g.game.selectedTile.x + l ; x++)
 	{
-		for (var y = g.game.selectedTile.y - l ; y < g.game.selectedTile.y + l ; y++)
+		for (var y = g.game.selectedTile.y - l ; y <= g.game.selectedTile.y + l ; y++)
 		{
 			var t = g.game.map.getTile(x, y);
 			g.game.DEBUG.spawnTestWorker(t);
