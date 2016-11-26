@@ -61,11 +61,13 @@ View.prototype.setAll = function()
 
 View.prototype.set = function()
 {
-	for (var i in g.game.changedTiles)
+	//set each cell
+	for(var x in this.cells)
 	{
-		var cell = this.getCellFromTile(g.game.changedTiles[i]);
-		if (cell)
-			this.setCell(cell);
+		for (var y in this.cells[x])
+		{
+			this.setCell(cells[x][y]);
+		}
 	}
 }
 
@@ -447,7 +449,7 @@ View.prototype.setTileInfo = function()
 		$("#tile-info-y").html(t.y);
 		$("#tile-info-elevation").html(t.elevation);
 		if (t.territory !== false)
-			$("#tile-info-owner").html("Team " + t.territory + "'s");
+			$("#tile-info-owner").html("Team " + (t.territory.number + 1) + "'s");
 		else
 			$("#tile-info-owner").html("Neutral");
 	}

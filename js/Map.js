@@ -196,7 +196,6 @@ Map.prototype.generate = function()
 
 		g.view.hideLoadingMessage();
 		g.view.setAll();
-		g.game.changedTiles = [];
 	}
 
 

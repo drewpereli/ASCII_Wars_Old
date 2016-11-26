@@ -39,10 +39,18 @@ Input.prototype.initialize = function()
 			g.game.clickCanvasPixel(event.offsetX, event.offsetY);
 	});
 
+	$("#select-canvas").mousemove(function(event){
+		if (g.view.zoom === g.view.MAX_ZOOM)
+			g.game.mouseMoveOverCanvasPixel(event.offsetX, event.offsetY);
+	});
+
 	$("#select-canvas").dblclick(function(event){
 		//Only do it if we're all the way zoomed in
 		if (g.view.zoom === g.view.MAX_ZOOM)
-			g.game.doubleClickCanvasPixel(event.offsetX, event.offsetY);
+			if (event.shiftKey)
+				g.game.shiftDoubleClickCanvasPixel(event.offsetX, event.offsetY);
+			else
+				g.game.doubleClickCanvasPixel(event.offsetX, event.offsetY);
 	})
 
 

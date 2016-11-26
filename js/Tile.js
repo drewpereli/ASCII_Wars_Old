@@ -43,22 +43,18 @@ function Tile(x, y){
 Tile.prototype.setActor = function(actor)
 {
 	this.actor = actor;
-
-	g.game.changedTiles.push(this);
 }
 
 
 Tile.prototype.setTerritory = function(team)
 {
 	this.territory = team;
-	g.game.changedTiles.push(this);
 }
 
 
 Tile.prototype.setTerrain = function(terrain)
 {
 	this.terrain = terrain;
-	g.game.changedTiles.push(this);
 }
 
 
@@ -85,7 +81,6 @@ Tile.prototype.getNextTileOnPath = function(tile)
 			{
 				tiles[tI].DEBUG.highlight = false;
 				tiles[tI].DEBUG.char = false;
-				g.game.changedTiles.push(t);
 			}
 		}
 	}
@@ -140,7 +135,6 @@ Tile.prototype.getNextTileOnPath = function(tile)
 					{
 						var t = checked[i];
 						//Debug
-						g.game.changedTiles.push(t);
 						t.DEBUG.highlight = true;
 						t.DEBUG.char = t.pF.pathLengthFromTarget.toFixed(1);
 					}

@@ -15,9 +15,12 @@ function Game(width, height){
 	this.height = height;
 
 	this.ticks = 0;
-	this.changedTiles = [];
 
 	this.selectedTile = false;
+	this.selectedUnit = false;
+	this.selectedScreen = false; //Units, buildings, or research screen
+	this.selectedTeam = false;
+	this.selectedDivision = false
 
 	this.interval = false;
 
@@ -55,7 +58,6 @@ Game.prototype.tick = function()
 		this.actors[i].tick();
 	}
 	g.view.set();
-	this.changedTiles = [];
 	this.ticks++;
 	g.view.updateTicks();
 	this.doAnimations();
@@ -189,11 +191,7 @@ Game.prototype.toggleSelectTile = function(tile)
 Game.prototype.clickCanvasPixel = function(x, y)
 {
 	var tileClicked = this.getTileFromPixels(x, y);
-	if (this.state === "DEFAULT")
-	{
-		this.toggleSelectTile(tileClicked);
-	}
-	else if (this.state === "CONSTRUCTING")
+	if (this.state === "CONSTRUCTING")
 	{
 		if (tileClicked.blocksMovement() === false 
 				&& tileClicked.terrain !== "WATER"
@@ -208,8 +206,27 @@ Game.prototype.doubleClickCanvasPixel = function(x, y)
 	var tileClicked = this.getTileFromPixels(x, y);
 	if (this.state === "DEFAULT")
 	{
-		this.selectedTile = tileClicked;
-		this.DEBUG.spawnSquareOfWorkersAtSelectedTile(1);
+		//this.DEBUG.spawnSquareOfWorkersAtTile(tileClicked, 1);
+	}
+}
+
+Game.prototype.shiftDoubleClickCanvasPixel = function(x, y)
+{
+	var tileClicked = this.getTileFromPixels(x, y);
+	if (this.state === "DEFAULT")
+	{
+		this.DEBUG.spawnSquareOfWorkers(tileClicked, 10);
+	}
+}
+
+
+Game.prototype.mouseMoveOverCanvasPixel = function(x, y)
+{
+	var tile = this.getTileFromPixels(x, y);
+	if (tile !== this.selectedTile)
+	{
+		this.selectedTile = tile;
+		g.view.setTileInfo();
 	}
 }
 
@@ -307,20 +324,17 @@ Game.prototype.DEBUG.spawnTestWorker = function(tile)
 }
 
 
-Game.prototype.DEBUG.spawnTestWorkerAtSelectedTile = function()
-{	
-	g.game.DEBUG.spawnTestWorker(g.game.selectedTile);
-}
 
-Game.prototype.DEBUG.spawnSquareOfWorkersAtSelectedTile = function(squareLength)
+Game.prototype.DEBUG.spawnSquareOfWorkers = function(tile, squareLength)
 {
 	var l = Math.floor(squareLength / 2);
-	for (var x = g.game.selectedTile.x - l ; x <= g.game.selectedTile.x + l ; x++)
+	for (var x = tile.x - l ; x <= tile.x + l ; x++)
 	{
-		for (var y = g.game.selectedTile.y - l ; y <= g.game.selectedTile.y + l ; y++)
+		for (var y = tile.y - l ; y <= tile.y + l ; y++)
 		{
 			var t = g.game.map.getTile(x, y);
-			g.game.DEBUG.spawnTestWorker(t);
+			if (t)
+				g.game.DEBUG.spawnTestWorker(t);
 		}
 	}
 }
