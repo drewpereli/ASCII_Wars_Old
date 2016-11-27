@@ -1,4 +1,6 @@
 
+"use strict";
+
 function Input()
 {
 
@@ -53,6 +55,12 @@ Input.prototype.initialize = function()
 				g.game.doubleClickCanvasPixel(event.offsetX, event.offsetY);
 	})
 
+
+	//View toggle checkboxes
+	$("input.view-toggle").change(function(){
+		var elementToggled = $(this).data("toggles");
+		g.view.toggleLayer(elementToggled);
+	});
 
 	//Time control buttons
 	$("#play-pause-button").click(function(){

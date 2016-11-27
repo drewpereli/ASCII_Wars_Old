@@ -1,4 +1,6 @@
 
+"use strict";
+
 function Random(seed) {
 	
 	this.lastRand = seed;

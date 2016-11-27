@@ -5,8 +5,14 @@ function Tile(x, y){
 	this.siblings = [false, false, false, false, false, false, false, false]; //Up, right, down, left. Will be set later
 	this.actor = false;
 	this.elevation = false;	
-	this.terrain = "OPEN";
 	this.territory = false;
+	this.layers = {
+		base: "GRASSLAND",
+		middle: false,
+	}
+	this.naturalResources = {
+		gold: 0,
+	}
 	this.selected = false;
 
 	this.blocksVision = false;
@@ -35,7 +41,7 @@ function Tile(x, y){
 
 
 
-
+"use strict";
 
 
 
@@ -43,6 +49,8 @@ function Tile(x, y){
 Tile.prototype.setActor = function(actor)
 {
 	this.actor = actor;
+	if (actor && this.territory !== actor.team)
+		this.setTerritory(actor.team);
 }
 
 
@@ -52,15 +60,20 @@ Tile.prototype.setTerritory = function(team)
 }
 
 
-Tile.prototype.setTerrain = function(terrain)
+Tile.prototype.setBaseLayer = function(terrain)
 {
-	this.terrain = terrain;
+	this.layers.base = terrain;
+}
+
+Tile.prototype.setMiddleLayer = function(terrain)
+{
+	this.layers.middle = terrain;
 }
 
 
 Tile.prototype.blocksMovement = function()
 {
-	return (this.actor || this.terrain === "WATER");
+	return (this.actor || this.layers.base === "WATER");
 }
 
 
@@ -267,6 +280,13 @@ Tile.prototype.getMoveWeight = function(sibIndex)
 {
 	var weight = 1;
 	var sib = this.siblings[sibIndex];
+	if (typeof sib === "undefined")
+	{
+		var e = new Error("bad sibIndex in getMoveWeight");
+		throw(e);
+		console.log(e.stack);
+		console.log(this);
+	}
 	var elDiff = sib.elevation - this.elevation;
 	var isDiagonal = sibIndex % 2 === 1; //If sib index is odd, the sib is diagonal
 	if (isDiagonal)

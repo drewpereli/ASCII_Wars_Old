@@ -1,4 +1,6 @@
 
+"use strict";
+
 function GlobalVariables(){
 	this.game;
 	this.input;
@@ -21,12 +23,14 @@ function GlobalVariables(){
 
 
 	this.colors = {
+		canvasBase: "#ddd",
 		border: 'black',
 		selectedTile: "yellow",
+		grassland: "green",
 		water: "blue",
 		defaultColor: 'black',
 		team: [
-			"blue",//Team 0
+			"cyan",//Team 0
 			"black",//Team 1
 		]
 	}
@@ -51,7 +55,7 @@ function GlobalVariables(){
 	}
 
 	this.terrains = [
-		"OPEN",
+		"GRASSLAND",
 		"WATER",
 	]
 	

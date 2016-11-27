@@ -1,5 +1,7 @@
 
 
+"use strict";
+
 function View(width, height){
 	
 	this.widthInCells = width;
@@ -16,11 +18,18 @@ function View(width, height){
 	this.heightInPixels = this.heightInCells * this.cellLength;
 
 	this.selectedTeam;
+	this.selectedControlArea;
 	this.selectedDivision;
 
 	this.zoom = g.constants.MAX_ZOOM; //10 is max zoom
 	this.MAX_ZOOM = g.constants.MAX_ZOOM;
 	this.MIN_ZOOM = g.constants.MIN_ZOOM;
+
+	this.show = {
+		terrain: true,
+		elevation: true,
+		territory: true
+	};
 
 	this.canvases = {
 		terrain: $("#terrain-canvas")[0].getContext("2d"),
@@ -66,7 +75,7 @@ View.prototype.set = function()
 	{
 		for (var y in this.cells[x])
 		{
-			this.setCell(cells[x][y]);
+			this.setCell(this.cells[x][y]);
 		}
 	}
 }
@@ -84,7 +93,7 @@ View.prototype.setCell = function(cell)
 	var tiles = this.getTilesFromCell(cell);
 	if (tiles.length > 0)
 	{
-		cellAttribute = { //After looking at all the tiles represented by the cell, these attributes are set to the most commonly occuring corresponding attribute of the tiles
+		var cellAttribute = { //After looking at all the tiles represented by the cell, these attributes are set to the most commonly occuring corresponding attribute of the tiles
 			terrain: false,
 			territory: false,
 			actor: false,
@@ -102,7 +111,7 @@ View.prototype.setCell = function(cell)
 		for (var i = 0 ; i < tiles.length ; i++)
 		{
 			var t = tiles[i];
-			var terrain = t.terrain;
+			var terrain = t.layers.base;
 			var territory = t.territory;
 			var actor = t.actor;
 			var elevation = t.elevation;
@@ -121,22 +130,38 @@ View.prototype.setCell = function(cell)
 	
 		//Go through the canvases
 		//Terrain
-		if (cellAttribute.terrain === "OPEN")
+		if (this.show.elevation)
 		{
-			color = this.getColorFromElevation(cellAttribute.elevation);
+			if (cellAttribute.terrain !== "WATER" || true)
+			{
+				color = this.getColorFromElevation(cellAttribute.elevation);
+			}
+			cell.fillRect(color, "terrain");
 		}
-		else if (cellAttribute.terrain === "WATER")
+		else if(this.show.terrain)//If not showing elevation, default to terrain color instead
 		{
-			color = g.colors.water;
+			if (cellAttribute.terrain === "GRASSLAND")
+			{
+				color = g.colors.grassland;
+			}
+			else if (cellAttribute.terrain === "WATER")
+			{
+				color = g.colors.water;
+			}
+			cell.fillRect(color, "terrain");
 		}
-		cell.fillRect(color, "terrain");
-		//cell.strokeRect(g.colors.border, "terrain");
 		
-		//Terrirory
-		if (cellAttribute.territory !== false)
+
+
+		//cell.strokeRect(g.colors.border, "terrain");
+		if (this.show.territory)
 		{
-			color = g.colors.team[cellAttribute.territory];
-			cell.fillRect(color, "territory");
+			//Terrirory
+			if (cellAttribute.territory !== false)
+			{
+				color = g.colors.team[cellAttribute.territory.number];
+				cell.fillRect(color, "territory");
+			}
 		}
 
 		//Actors
@@ -205,6 +230,13 @@ View.prototype.clearCell = function(cell)
 
 
 
+
+
+View.prototype.toggleLayer = function(layerName)
+{
+	this.show[layerName] ^= 1;
+	this.set();
+}
 
 
 
@@ -442,6 +474,12 @@ View.prototype.setTileInfo = function()
 {
 	var t = g.game.selectedTile;
 
+	if (typeof t.territory === "undefined")
+	{
+		var e = new Error("bad tile");
+		console.log(t);
+		throw(e);
+	}
 	if (t)
 	{
 		$("#tile-info-inner").removeClass("hidden");
@@ -533,6 +571,7 @@ View.prototype.selectControlArea = function(a)
 	{
 		$(currentControlArea).find(".research-control-area-container").removeClass("display-none");
 	}
+	this.selectedControlArea = a;
 }
 
 
@@ -644,7 +683,7 @@ View.prototype.initialize = function(){
 	//Set canvas container style (to fill in the space to make the floats right)
 	$("#canvases").css("width", this.widthInPixels + "px")
 					.css("height", this.heightInPixels + "px")
-					.css("background-color", "black");
+					.css("background-color", g.colors.canvasBase);
 
 	//Fill cell array
 	var width = this.widthInCells;

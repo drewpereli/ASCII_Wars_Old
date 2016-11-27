@@ -1,4 +1,6 @@
 
+"use strict";
+
 function Building()
 {
 	this.type = "BUILDING";

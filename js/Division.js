@@ -1,5 +1,7 @@
 
 
+"use strict";
+
 function Division(team, number)
 {
 	this.team = team;
@@ -19,12 +21,18 @@ Division.prototype.addUnit = function(unit)
 	this.units.push(unit);
 }
 
+Division.prototype.removeUnit = function(unit)
+{
+	var i = this.units.indexOf(unit);
+	if (i !== -1)
+		this.units.splice(index, 1);
+}
 
 /*Behavior stuff*/
-Division.prototype.moveToSelectedTile = function()
+Division.prototype.moveToTile = function(tile)
 {
 	this.behavior.action = "MOVING";
-	this.behavior.tile = g.game.selectedTile;
+	this.behavior.tile = tile;
 }
 
 

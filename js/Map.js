@@ -1,4 +1,6 @@
 
+"use strict";
+
 function Map(width, height){
 	
 	this.width = width;
@@ -42,6 +44,7 @@ Map.prototype.generate = function()
 		}
 	}
 
+	
 	for (var i = 0 ; i <= gPs.numFunctions ; i++)
 	{
 		var xOffset = g.rand.next(0, 2 * Math.PI);
@@ -56,8 +59,8 @@ Map.prototype.generate = function()
 				//xOffset = 0;
 				//multiplier = 1;
 				//Rotate the coordinate
-				x1 = (x + xOffset) * multiplier * Math.cos(rotationOffset) - y * multiplier * Math.sin(rotationOffset);
-				y1 = multiplier * y * Math.cos(rotationOffset) + multiplier * (x + xOffset) * Math.sin(rotationOffset);
+				var x1 = (x + xOffset) * multiplier * Math.cos(rotationOffset) - y * multiplier * Math.sin(rotationOffset);
+				var y1 = multiplier * y * Math.cos(rotationOffset) + multiplier * (x + xOffset) * Math.sin(rotationOffset);
 				var z;
 				z = useXNotY ? Math.sin(x1) : Math.sin(y1); //Between -1 and 1
 				//Normalize z to between 0 and 1
@@ -87,9 +90,9 @@ Map.prototype.generate = function()
 		xOffset = g.rand.next(0, 2 * Math.PI);
 		multiplier = g.rand.next(.05, 1);
 		rotationOffset = g.rand.next(0, 2 * Math.PI);
-		for (var x = 0 ; x < this.width ; x++)
+		for (var x = 0 ; x < g.game.map.width ; x++)
 		{
-			for (var y = 0 ; y < this.height ; y++)
+			for (var y = 0 ; y < g.game.map.height ; y++)
 			{
 				//rotationOffset = 0;
 				//xOffset = 0;
@@ -158,11 +161,11 @@ Map.prototype.generate = function()
 				}
 				if (tile.elevation <= 0)
 				{
-					tile.setTerrain("WATER");
+					tile.setBaseLayer("WATER");
 				}
 				else
 				{
-					tile.setTerrain("OPEN");//This isn't necessary if the map gen works the first time, but if it doesn't,
+					tile.setBaseLayer("GRASSLAND");//This isn't necessary if the map gen works the first time, but if it doesn't,
 						//Then there may be tiles that were previously set to water that are now above sea level, so we have to 
 						//set them back
 				}
@@ -170,6 +173,12 @@ Map.prototype.generate = function()
 		});
 
 		//Place command centers
+		//If command centers area already there (for some reason, stupid bugs), take them away
+		while (g.game.actors.length > 0)
+		{
+			//kill the first actor
+			g.game.actors[0].die();
+		}
 		for (var i in g.game.teams)
 		{
 			var tile;
@@ -226,7 +235,7 @@ Map.prototype.getRandomUnoccupiedTile = function()
 	var tiles = this.getShuffledTiles();
 	for (var i in tiles)
 	{	
-		if (tiles[i].actor === false && tiles[i].terrain === "OPEN")
+		if (tiles[i].actor === false && tiles[i].layers.base !== "WATER")
 		{
 			return tiles[i];
 		}
@@ -242,7 +251,7 @@ Map.prototype.getRandomUnoccupiedTileWithin = function(x1, y1, x2, y2)
 	for (var i in tiles)
 	{	
 		var t = tiles[i];
-		if (t.actor === false && t.terrain === "OPEN")
+		if (t.actor === false && tiles[i].layers.base !== "WATER")
 		{
 			if (Number(t.x) >= x1 && Number(t.y) >= y1 && Number(t.x) < x2 && Number(t.y) < y2)
 			{

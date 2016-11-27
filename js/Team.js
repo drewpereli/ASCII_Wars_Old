@@ -1,4 +1,6 @@
 
+"use strict";
+
 function Team()
 {
 	this.number;

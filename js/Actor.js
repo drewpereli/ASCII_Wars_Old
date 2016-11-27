@@ -1,4 +1,6 @@
 
+"use strict";
+
 function Actor()
 {
 	this.team;
@@ -21,6 +23,15 @@ Actor.prototype.tick = function()
 	{
 		this.takeAction();
 	}
+}
+
+
+Actor.prototype.die = function()
+{
+	this.tile.setActor(false);
+	if (this.division)
+		this.division.removeUnit(this);
+	g.game.actors.removeActor(this);
 }
 
 Actor.prototype.initialize = function(team, tile)

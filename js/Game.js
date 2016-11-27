@@ -1,4 +1,6 @@
 
+"use strict";
+
 function Game(width, height){
 
 	this.state = "DEFAULT";
@@ -9,8 +11,6 @@ function Game(width, height){
 	this.actors = [];
 	this.teams = [];
 
-	//this.tilesBetween = []; //Tiles in between selectedTile and player.tile. Used for aiming info and graphics
-
 	this.width = width;
 	this.height = height;
 
@@ -18,15 +18,10 @@ function Game(width, height){
 
 	this.selectedTile = false;
 	this.selectedUnit = false;
-	this.selectedScreen = false; //Units, buildings, or research screen
-	this.selectedTeam = false;
-	this.selectedDivision = false
 
-	this.interval = false;
+	this.animating = false;
 
 	this.lastUniqueId = 0;
-
-
 }
 
 
@@ -73,9 +68,9 @@ Game.prototype.doAnimations = function()
 	{
 		if (frameNumber === 10)
 		{
+			g.game.animating = false;
 			if (g.game.timeState === "PLAYING")
 			{
-				g.game.animating = false;
 				g.game.tick();
 			}
 			return;
@@ -113,12 +108,12 @@ Game.prototype.setAllTilesToUnchanged = function()
 
 
 
-Game.prototype.killActor = function(actor)
+Game.prototype.removeActor = function(actor)
 {
 	//Tick is set up to simply go to the next unit in the array, not the next index, so we don't have to worry about removing things from the array
 	var index = this.actors.indexOf(unit);
 	this.actors.splice(index, 1);
-	delete unit;
+	//delete unit;
 }
 
 
@@ -165,6 +160,7 @@ Game.prototype.directionStringToIndex = function(direction)
 }
 
 
+/*
 Game.prototype.toggleSelectTile = function(tile)
 {
 	if (tile === this.selectedTile)
@@ -186,6 +182,7 @@ Game.prototype.toggleSelectTile = function(tile)
 	g.view.setTile(tile);
 	g.view.setTileInfo();
 }
+*/
 
 
 Game.prototype.clickCanvasPixel = function(x, y)
@@ -194,7 +191,7 @@ Game.prototype.clickCanvasPixel = function(x, y)
 	if (this.state === "CONSTRUCTING")
 	{
 		if (tileClicked.blocksMovement() === false 
-				&& tileClicked.terrain !== "WATER"
+				&& tileClicked.layers.base !== "WATER"
 				&& tileClicked.territory === g.view.selectedTeam)
 			this.constructSelectedConstruction(tileClicked);
 	}
@@ -206,7 +203,10 @@ Game.prototype.doubleClickCanvasPixel = function(x, y)
 	var tileClicked = this.getTileFromPixels(x, y);
 	if (this.state === "DEFAULT")
 	{
-		//this.DEBUG.spawnSquareOfWorkersAtTile(tileClicked, 1);
+		if (g.view.selectedControlArea === "units")
+		{
+			g.view.selectedDivision.moveToTile(tileClicked);
+		}
 	}
 }
 
@@ -215,7 +215,7 @@ Game.prototype.shiftDoubleClickCanvasPixel = function(x, y)
 	var tileClicked = this.getTileFromPixels(x, y);
 	if (this.state === "DEFAULT")
 	{
-		this.DEBUG.spawnSquareOfWorkers(tileClicked, 10);
+		this.DEBUG.spawnSquareOfWorkers(tileClicked, 3);
 	}
 }
 
@@ -333,7 +333,7 @@ Game.prototype.DEBUG.spawnSquareOfWorkers = function(tile, squareLength)
 		for (var y = tile.y - l ; y <= tile.y + l ; y++)
 		{
 			var t = g.game.map.getTile(x, y);
-			if (t)
+			if (t && !t.blocksMovement())
 				g.game.DEBUG.spawnTestWorker(t);
 		}
 	}
